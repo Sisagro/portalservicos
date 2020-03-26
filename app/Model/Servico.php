@@ -46,16 +46,6 @@ class Servico extends AppModel {
      * hasMany associations
      */
     public $hasMany = array(
-        'Fornecedorservico' => array(
-            'className' => 'Fornecedorservico',
-            'foreignKey' => 'servico_id',
-            'dependent' => true,
-        ),
-        'Licitacaoservico' => array(
-            'className' => 'Licitacaoservico',
-            'foreignKey' => 'servico_id',
-            'dependent' => true,
-        ),
     );
 
 }

@@ -14,12 +14,6 @@ class Fornecedor extends AppModel {
      * @var array
      */
     public $validate = array(
-        'cpf' => array(
-            'rule' => array('maxLength', '11'),
-            'notempty' => array(
-                'rule' => array('notempty'),
-            ),
-        ),
         'nome' => array(
             'rule' => array('maxLength', '200'),
             'notempty' => array(
@@ -46,7 +40,7 @@ class Fornecedor extends AppModel {
         'email' => array(
             'rule' => array('maxLength', '200'),
             'notempty' => array(
-                'allowEmpty' => true,
+                'rule' => array('notempty'),
             ),
         ),
         'usercad_id' => array(
@@ -65,7 +59,7 @@ class Fornecedor extends AppModel {
     public $belongsTo = array(
         'User' => array(
             'className' => 'User',
-            'foreignKey' => 'usercad_id',
+            'foreignKey' => 'user_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
@@ -78,11 +72,6 @@ class Fornecedor extends AppModel {
     public $hasMany = array(
         'Fornecedorservico' => array(
             'className' => 'Fornecedorservico',
-            'foreignKey' => 'fornecedor_id',
-            'dependent' => true,
-        ),
-        'Licitacaofornecedor' => array(
-            'className' => 'Licitacaofornecedor',
             'foreignKey' => 'fornecedor_id',
             'dependent' => true,
         ),

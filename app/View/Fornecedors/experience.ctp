@@ -1,30 +1,26 @@
+<div id="efetue_cadastro">
+    <h1>&nbsp;&nbsp;&nbsp;&nbsp;Conte a sua experiência com este fornecedor</h1>
+</div>
+<br><br>
 <?php
 
 echo $this->Html->link($this->Html->image("botoes/retornar.png", array("alt" => "Retornar", "title" => "Retornar")), array('action' => 'index'), array('escape' => false, 'onclick' => 'history.go(-1); return false;'));
 ?>
 <br><br>
-<div id="efetue_cadastro">
-    <h1>&nbsp;&nbsp;&nbsp;&nbsp;Descreva a sua experiência com este fornecedor</h1>
-</div>
-<br><br>
 
 <div id="informacao_servico">
-    <h3>&nbsp;&nbsp;&nbsp;<u>Informações do fornecedor</u></h3>
-    <br>
-    <h4>&nbsp;&nbsp;&nbsp;Nome: <?php echo $fornecedor['Fornecedor']['nome'] . ' ' . $fornecedor['Fornecedor']['sobrenome'];?> </h4>
-    <h4>&nbsp;&nbsp;&nbsp;E-mail: <?php echo $fornecedor['Fornecedor']['email'];?> </h4>
-    <h4>&nbsp;&nbsp;&nbsp;Celular: <?php echo '('.substr($fornecedor['Fornecedor']['cel'], 0, 2).') '.substr($fornecedor['Fornecedor']['cel'], 2, 5).'.'.substr($fornecedor['Fornecedor']['cel'], 7, 4);?> </h4>
-    <?php if (!empty($fornecedor['Fornecedor']['telefone'])) { ?>
-    <h4>&nbsp;&nbsp;&nbsp;Telefone: <?php echo '('.substr($fornecedor['Fornecedor']['telefone'], 0, 2).') '.substr($fornecedor['Fornecedor']['telefone'], 2, 4).'.'.substr($fornecedor['Fornecedor']['telefone'], 6, 4); ?>&nbsp;</h4>
-        <?php } else { ?>
-    <h4>&nbsp;&nbsp;&nbsp;Telefone: <?php echo ''; ?>&nbsp;</h4>
-        <?php } ?>
-    <?php $media_avaliacoes = $this->requestAction('/Fornecedors/busca_mediaavaliacoes', array('pass' => array($fornecedor['Fornecedor']['id']))); ?>
-    <h4>&nbsp;&nbsp;&nbsp;Média avaliação: <?php echo number_format($media_avaliacoes, 2, ",", "");?> </h4>
+    <h3>&nbsp;&nbsp;&nbsp;Informações do fornecedor</h3>
 </div>
 <br>
 <?php echo $this->Form->create('Fornecedor'); ?>
-
+<fieldset>
+    <?php
+    echo $this->Form->input('nome', array('id' => 'nome', 'label' => 'Nome', 'value'=> $fornecedor['Fornecedor']['nome']. ' '. $fornecedor['Fornecedor']['sobrenome'], 'readonly' => true));
+    echo $this->Form->input('email',  array('id' => 'email', 'label' => 'E-mail', 'value'=> $fornecedor['Fornecedor']['email'], 'readonly' => true));
+    echo $this->Form->input('cel',  array('id' => 'cel', 'label' => 'Celular', 'value'=> $fornecedor['Fornecedor']['cel'], 'readonly' => true));
+    echo $this->Form->input('telefone',  array('id' => 'telefone', 'label' => 'Telefone', 'value'=> $fornecedor['Fornecedor']['telefone'], 'readonly' => true));
+    ?>
+</fieldset>
 <div id="informacao_servico">
     <h3>Informações referente ao serviço prestado</h3>
 </div>

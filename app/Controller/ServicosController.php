@@ -129,19 +129,9 @@ class ServicosController extends AppController {
      * Funções ajax
      */
     public function buscaServicos($chave) {
-
         $this->layout = 'ajax';
 
         $servicos = $this->Servico->find('list', array('order' => 'descricao ASC', 'fields' => array('id', 'descricao'), 'conditions' => array('tiposervico_id' => $this->request->data['Fornecedorservico']['tiposervico_id'])));
-
-        $this->set('servicos', $servicos);
-    }
-
-    public function buscaLicitacaoServicos($chave) {
-
-        $this->layout = 'ajax';
-
-        $servicos = $this->Servico->find('list', array('order' => 'descricao ASC', 'fields' => array('id', 'descricao'), 'conditions' => array('tiposervico_id' => $this->request->data['Servico']['tiposervico_id'])));
 
         $this->set('servicos', $servicos);
     }

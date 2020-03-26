@@ -68,13 +68,6 @@ class Fornecedorservico extends AppModel {
             'fields' => '',
             'order' => ''
         ),
-        'Servico' => array(
-            'className' => 'Servico',
-            'foreignKey' => 'servico_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => ''
-        ),
     );
 
     /**

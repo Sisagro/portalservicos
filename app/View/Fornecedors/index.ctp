@@ -37,7 +37,7 @@ echo $this->Html->link($this->Html->image("botoes/add.png", array("alt" => "Adic
             <div id="botoes">
                     <?php
                     echo $this->Html->link($this->Html->image("botoes/view.png", array("alt" => "Visualizar", "title" => "Visualizar")), array('action' => 'view', $item['Fornecedor']['id']), array('escape' => false));
-                    if ($dadosUser['Auth']['User']['id'] == $item['Fornecedor']['usercad_id']) {
+                    if ($dadosUser['Auth']['User']['id'] == $item['Fornecedor']['user_id']) {
                         echo $this->Html->link($this->Html->image("botoes/editar.gif", array("alt" => "Editar", "title" => "Editar")), array('action' => 'edit', $item['Fornecedor']['id']), array('escape' => false));
                     echo $this->Html->link($this->Html->image('botoes/excluir.gif', array('alt' => 'Exluir', 'title' => 'Exluir')),
                                                array('action' => 'delete', $item['Fornecedor']['id']), array('escape' => false),

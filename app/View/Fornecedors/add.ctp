@@ -7,7 +7,6 @@ echo $this->Html->link($this->Html->image("botoes/retornar.png", array("alt" => 
 <?php echo $this->Form->create('Fornecedor'); ?>
 <fieldset>
     <?php
-    echo $this->Form->input('cpf', array('id' => 'cpf', 'label' => 'CPF'));
     echo $this->Form->input('nome', array('id' => 'nome', 'label' => 'Nome'));
     echo $this->Form->input('sobrenome',  array('id' => 'nome', 'label' => 'Sobrenome'));
     echo $this->Form->input('email',  array('id' => 'email', 'label' => 'E-mail'));
@@ -21,7 +20,6 @@ echo $this->Html->link($this->Html->image("botoes/retornar.png", array("alt" => 
 <script type="text/javascript">
 
     jQuery(document).ready(function () {
-        $("#cpf").mask("999.999.999-99");
         $("#cel").mask("(99)99999.9999");
         $("#telefone").mask("(99)9999.9999");
     });

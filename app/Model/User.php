@@ -117,16 +117,11 @@ class User extends AppModel {
     public $hasMany = array(
         'Fornecedor' => array(
             'className' => 'Fornecedor',
-            'foreignKey' => 'usercad_id',
+            'foreignKey' => 'user_id',
             'dependent' => true,
         ),
         'Fornecedorservico' => array(
             'className' => 'Fornecedorservico',
-            'foreignKey' => 'user_id',
-            'dependent' => true,
-        ),
-        'Licitacao' => array(
-            'className' => 'Licitacao',
             'foreignKey' => 'user_id',
             'dependent' => true,
         ),

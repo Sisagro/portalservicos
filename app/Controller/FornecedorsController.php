@@ -38,59 +38,17 @@ class FornecedorsController extends AppController {
      */
     public function view($id = null) {
 
-        $this->Fornecedor->id = $id;
-        if (!$this->Fornecedor->exists($id)) {
+        $this->Tiposervico->id = $id;
+        if (!$this->Tiposervico->exists($id)) {
             $this->Session->setFlash('Registro não encontrado.', 'default', array('class' => 'mensagem_erro'));
             $this->redirect(array('action' => 'index'));
         }
 
         $dadosUser = $this->Session->read();
 
-        $this->Fornecedor->recursive = 0;
+        $tiposervico = $this->Tiposervico->read(null, $id);
 
-        $fornecedor = $this->Fornecedor->read(null, $id);
-
-        $fornecedor_servicos = $this->Fornecedor->find('all', array(
-            'fields' => array('User.id', 'User.nome', 'User.sobrenome', 'User.lote', 'Servico.descricao', 'Tiposervico.descricao',
-                'Fornecedorservico.valor', 'Fornecedorservico.avaliacao', 'Fornecedorservico.observacao', 'Fornecedorservico.created'),
-            'conditions' => array('Fornecedor.id' => $id),
-            'joins' => array(
-                array(
-                    'table' => 'fornecedorservicos',
-                    'alias' => 'Fornecedorservico',
-                    'type' => 'INNER',
-                    'conditions' => [
-                        'Fornecedor.id = Fornecedorservico.fornecedor_id',
-                    ],
-                ),
-                array(
-                    'table' => 'servicos',
-                    'alias' => 'Servico',
-                    'type' => 'INNER',
-                    'conditions' => [
-                        'Servico.id = Fornecedorservico.servico_id',
-                    ],
-                ),
-                array(
-                    'table' => 'tiposervicos',
-                    'alias' => 'Tiposervico',
-                    'type' => 'INNER',
-                    'conditions' => [
-                        'Tiposervico.id = Servico.tiposervico_id',
-                    ],
-                ),
-            ),
-            'limit' => '',
-            'order' => array('Fornecedorservico.created' => 'desc')
-        ));
-
-        $this->set('fornecedor_servicos', $fornecedor_servicos);
-
-        $this->set('fornecedor', $fornecedor);
-
-        $avaliacao = $this->busca_mediaavaliacoes($id);
-
-        $this->set('avaliacao', $avaliacao);
+        $this->set('tiposervico', $tiposervico);
     }
 
     /**
@@ -101,25 +59,10 @@ class FornecedorsController extends AppController {
         $dadosUser = $this->Session->read();
 
         if ($this->request->is('post')) {
-
-            $valida_cpf = $this->validaCPF($this->request->data['Fornecedor']['cpf']);
-
-            if (!$valida_cpf) {
-                $this->Session->setFlash('CPF inválido.', 'default', array('class' => 'mensagem_erro'));
-                return;
-            }
-
-            $valida_fornecedor = $this->Fornecedor->find('count', array('conditions' => array('email' => $this->request->data['Fornecedor']['email'])));
-
-            if ($valida_fornecedor > 0) {
-                $this->Session->setFlash('E-mail já foi vinculado a outro fornecedor.', 'default', array('class' => 'mensagem_erro'));
-                return;
-            }
             $separadores = array(".", "-", "/", "(", ")");
-            $this->request->data['Fornecedor']['cpf'] = str_replace($separadores, '', $this->request->data['Fornecedor']['cpf']);
             $this->request->data['Fornecedor']['cel'] = str_replace($separadores, '', $this->request->data['Fornecedor']['cel']);
             $this->request->data['Fornecedor']['telefone'] = str_replace($separadores, '', $this->request->data['Fornecedor']['telefone']);
-            $this->request->data['Fornecedor']['usercad_id'] = $dadosUser['Auth']['User']['id'];
+            $this->request->data['Fornecedor']['user_id'] = $dadosUser['Auth']['User']['id'];
             $this->Fornecedor->create();
             if ($this->Fornecedor->save($this->request->data)) {
                 $this->Session->setFlash('Fornecedor adicionado com sucesso!', 'default', array('class' => 'mensagem_sucesso'));
@@ -146,14 +89,7 @@ class FornecedorsController extends AppController {
         $fornecedor = $this->Fornecedor->read(null, $id);
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $valida_cpf = $this->validaCPF($this->request->data['Fornecedor']['cpf']);
-
-            if (!$valida_cpf) {
-                $this->Session->setFlash('CPF inválido.', 'default', array('class' => 'mensagem_erro'));
-                return;
-            }
             $separadores = array(".", "-", "/", "(", ")");
-            $this->request->data['Fornecedor']['cpf'] = str_replace($separadores, '', $this->request->data['Fornecedor']['cpf']);
             $this->request->data['Fornecedor']['cel'] = str_replace($separadores, '', $this->request->data['Fornecedor']['cel']);
             $this->request->data['Fornecedor']['telefone'] = str_replace($separadores, '', $this->request->data['Fornecedor']['telefone']);
             if ($this->Fornecedor->save($this->request->data)) {
@@ -163,7 +99,6 @@ class FornecedorsController extends AppController {
                 $this->Session->setFlash('Registro não foi alterado. Por favor tente novamente.', 'default', array('class' => 'mensagem_erro'));
             }
         } else {
-            $this->Fornecedor->recursive = 0;
             $this->request->data = $this->Fornecedor->read(null, $id);
         }
     }
@@ -220,35 +155,6 @@ class FornecedorsController extends AppController {
                 $this->Session->setFlash('Registro não foi alterado. Por favor tente novamente.', 'default', array('class' => 'mensagem_erro'));
             }
         }
-    }
-
-    /**
-     * validaCPF method
-     */
-    function validaCPF($cpf) {
-
-        // Extrai somente os números
-        $cpf = preg_replace('/[^0-9]/is', '', $cpf);
-
-        // Verifica se foi informado todos os digitos corretamente
-        if (strlen($cpf) != 11) {
-            return false;
-        }
-        // Verifica se foi informada uma sequência de digitos repetidos. Ex: 111.111.111-11
-        if (preg_match('/(\d)\1{10}/', $cpf)) {
-            return false;
-        }
-        // Faz o calculo para validar o CPF
-        for ($t = 9; $t < 11; $t++) {
-            for ($d = 0, $c = 0; $c < $t; $c++) {
-                $d += $cpf{$c} * (($t + 1) - $c);
-            }
-            $d = ((10 * $d) % 11) % 10;
-            if ($cpf{$c} != $d) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**

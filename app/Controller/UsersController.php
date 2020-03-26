@@ -127,6 +127,60 @@ class UsersController extends AppController {
         $dadosUser = $this->Session->read();
         $this->set('dadosUser', $dadosUser);
 
+        $this->loadModel('Paise');
+        $paises = $this->Paise->find('list', array(
+            'fields' => array('id', 'nome'),
+            'order' => array('nome' => 'asc')
+        ));
+        $this->set('paises', $paises);
+
+        $this->loadModel('Placa');
+        $placa_aux = $this->Placa->find('all', array(
+            'fields' => array('id', 'placa', 'descricao'),
+            'conditions' => array('Placa.ativo' => 'S', 'Placa.id not in (select placa_id from userplacas)'),
+            'order' => array('placa' => 'asc')
+        ));
+
+        $placa_aux_2 = $this->Placa->find('all', array(
+            'fields' => array('id', 'placa', 'descricao'),
+            'conditions' => array('Placa.ativo' => 'S', 'Placa.id in (select placa_id from userplacas where user_id = ' . $id . ')'),
+            'order' => array('placa' => 'asc')
+        ));
+
+        foreach ($placa_aux as $key => $item) :
+            $placas[$item['Placa']['id']] = substr($item['Placa']['placa'], 0, 3) . '-' . substr($item['Placa']['placa'], 3, 4) . ' ' . $item['Placa']['descricao'];
+        endforeach;
+
+        foreach ($placa_aux_2 as $key => $item) :
+            $placas[$item['Placa']['id']] = substr($item['Placa']['placa'], 0, 3) . '-' . substr($item['Placa']['placa'], 3, 4) . ' ' . $item['Placa']['descricao'];
+        endforeach;
+        $this->set('placas', $placas);
+
+        $this->loadModel('Cartao');
+        $cartaos_aux = $this->Cartao->find('all', array(
+            'fields' => array('Cartao.id', 'Cartao.numero', 'Bandeira.descricao'),
+            'conditions' => array('Cartao.ativo' => 'S', 'Cartao.id not in (select cartao_id from usercartaos)'),
+            'order' => array('numero' => 'asc')
+        ));
+
+        $cartaos_aux_2 = $this->Cartao->find('all', array(
+            'fields' => array('Cartao.id', 'Cartao.numero', 'Bandeira.descricao'),
+            'conditions' => array('Cartao.ativo' => 'S', 'Cartao.id in (select cartao_id from usercartaos where user_id = ' . $id . ')'),
+            'order' => array('numero' => 'asc')
+        ));
+
+        foreach ($cartaos_aux as $key => $item) :
+            $cartaos[$item['Cartao']['id']] = 'xxxx.xxxx.xxxx.' . $item['Cartao']['numero'] . '  ' . $item['Bandeira']['descricao'];
+        endforeach;
+
+        foreach ($cartaos_aux_2 as $key => $item) :
+            $cartaos[$item['Cartao']['id']] = 'xxxx.xxxx.xxxx.' . $item['Cartao']['numero'] . '  ' . $item['Bandeira']['descricao'];
+        endforeach;
+        $this->set('cartaos', $cartaos);
+
+        $ativo = array('S' => 'SIM', 'N' => 'NÃO');
+        $this->set('ativo', $ativo);
+
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->User->save($this->request->data)) {
                 $this->Session->setFlash('Usuário alterado com sucesso.', 'default', array('class' => 'mensagem_sucesso'));
@@ -165,6 +219,39 @@ class UsersController extends AppController {
 
     public function validaAcesso($user, $controller) {
 
+        if (!empty($user['Auth']['User'])) {
+            $this->loadModel('UserGroup');
+            $perfil = $this->UserGroup->find('all', array(
+                'conditions' => array('user_id' => $user['Auth']['User']['id'],
+            )));
+            $perfis = "";
+            for ($i = 0; $i < count($perfil); $i++) {
+                if ($i > 0) {
+                    $perfis = $perfis . ",";
+                }
+                $perfis = $perfis . $perfil[$i]['Group']['id'];
+            }
+            $this->loadModel('Groupmenu');
+            $this->Groupmenu->recursive = 1;
+            $menuCarregado = $this->Groupmenu->find('all', array('conditions' => array('Group.id IN (' . $perfis . ')',
+                    'Menu.controller' => $controller),
+                'fields' => array('Menu.id',
+                    'Menu.nome',
+                    'Menu.ordem',
+                    'Menu.menu',
+                    'Menu.controller'),
+                'order' => array('Menu.menu' => 'asc',
+                    'Menu.ordem' => 'asc'),
+            ));
+            if (count($menuCarregado) > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return false;
     }
 
     public function login() {
@@ -185,18 +272,8 @@ class UsersController extends AppController {
     }
 
     public function signup() {
-
         if ($this->request->is('post') || $this->request->is('put')) {
-
-            $valida_usuario = $this->User->find('count', array('conditions' => array('username' => $this->request->data['User']['username'])));
-
-            if ($valida_usuario > 0) {
-                $this->Session->setFlash('E-mail já esta em uso.', 'default', array('class' => 'mensagem_erro'));
-                return;
-            }
-
             $this->request->data['User']['password'] = $this->request->data['User']['new_password'];
-
             if ($this->User->save($this->request->data, array('validate' => 'only'))) {
 
                 $usuario = $this->User->read(null, $this->Auth->user('id'));

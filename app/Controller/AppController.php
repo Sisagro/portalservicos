@@ -41,7 +41,7 @@ class AppController extends Controller {
         'Paginator',
         'Auth' => array(
             'loginRedirect' => array('controller' => 'homes', 'action' => 'index'),
-            'logoutRedirect' => 'http://localhost/portalservicos/',
+            'logoutRedirect' => '/localhost/portalservicos',
             'authorize' => array('Controller')
         ),
         'FilterResults.Filter' => array(
@@ -70,8 +70,8 @@ class AppController extends Controller {
 
     function beforeRender() {
 
-        $dadosUser = $this->Session->read();
-        if (!empty($dadosUser['Auth']['User'])) {
+//        $dadosUser = $this->Session->read();
+//        if (!empty($dadosUser['Auth']['User'])) {
 //            $this->loadModel('UserGroup');
 //            $perfil = $this->UserGroup->find('all', array(
 //                'conditions' => array('user_id' => $dadosUser['Auth']['User']['id'],
@@ -88,20 +88,20 @@ class AppController extends Controller {
 //
 //            $arrayConditions = array('Group.id IN (' . $perfis . ')',
 //                'Menu.mostramenu' => 1);
-
-            $this->loadModel('Menu');
-            $this->Menu->recursive = 1;
-            $menuCarregado = $this->Menu->find('all', array(
-                'fields' => array('Menu.id',
-                    'Menu.nome',
-                    'Menu.ordem',
-                    'Menu.menu',
-                    'Menu.controller'),
-                'order' => array('Menu.menu' => 'asc',
-                    'Menu.ordem' => 'asc'),
-            ));
-            $this->set('menuCarregado', $menuCarregado);
-        }
+//
+//            $this->loadModel('Groupmenu');
+//            $this->Groupmenu->recursive = 1;
+//            $menuCarregado = $this->Groupmenu->find('all', array('conditions' => $arrayConditions,
+//                'fields' => array('Menu.id',
+//                    'Menu.nome',
+//                    'Menu.ordem',
+//                    'Menu.menu',
+//                    'Menu.controller'),
+//                'order' => array('Menu.menu' => 'asc',
+//                    'Menu.ordem' => 'asc'),
+//            ));
+//            $this->set('menuCarregado', $menuCarregado);
+//        }
     }
 
 }
